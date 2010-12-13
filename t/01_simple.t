@@ -34,6 +34,11 @@ subtest 'delete' => sub {
 subtest 'update' => sub {
     my $builder = SQL::Maker->new(driver => 'sqlite');
     {
+        my ($sql, @binds) = $builder->update('user', ['name' => 'john', email => 'john@example.com'], {user_id => 3});
+        is $sql, "UPDATE `user` SET `name` = ?, `email` = ? WHERE (`user_id` = ?)";
+        is join(',', @binds), 'john,john@example.com,3';
+    }
+    {
         my ($sql, @binds) = $builder->update('foo' => ordered_hashref(bar => 'baz', john => 'man'), ordered_hashref(yo => 'king'));
         is $sql, "UPDATE `foo` SET `bar` = ?, `john` = ? WHERE (`yo` = ?)";
         is join(',', @binds), 'baz,man,king';
@@ -54,6 +59,14 @@ subtest 'select_query' => sub {
         is $stmt->as_sql, "SELECT `foo`, `bar`\nFROM `foo`\nWHERE (`bar` = ?) AND (`john` = ?)\nORDER BY yo\n";
         is join(',', $stmt->bind), 'baz,man';
     };
+};
+
+subtest 'new_select' => sub {
+    my $builder = SQL::Maker->new(driver => 'sqlite', quote_char => q{`}, name_sep => q{.});
+    my $select = $builder->new_select();
+    isa_ok $select, 'SQL::Maker::Select';
+    is $select->quote_char, q{`};
+    is $select->name_sep, q{.};
 };
 
 subtest 'select' => sub {

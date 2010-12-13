@@ -2,7 +2,7 @@ package SQL::Maker;
 use strict;
 use warnings;
 use 5.008001;
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 use Class::Accessor::Lite 0.05 (
     ro => [qw/quote_char name_sep driver select_class/],
 );
@@ -42,6 +42,16 @@ sub new {
     $args{name_sep}    ||= '.';
     $args{select_class} = $driver eq 'Oracle' ? 'SQL::Maker::Select::Oracle' : 'SQL::Maker::Select';
     bless {%args}, $class;
+}
+
+sub new_select {
+    my ($self, @args) = @_;
+
+    return $self->select_class->new(
+        name_sep   => $self->name_sep,
+        quote_char => $self->quote_char,
+        @args,
+    );
 }
 
 # $builder->insert($table, \%values);
@@ -91,7 +101,8 @@ sub update {
 
     my (@columns, @bind_columns);
     # make "SET" clause.
-    while (my ($col, $val) = each %$args) {
+    my @args = ref $args eq 'HASH' ? %$args : @$args;
+    while (my ($col, $val) = splice @args, 0, 2) {
         my $quoted_col = $self->_quote($col);
         if (ref($val) eq 'SCALAR') {
             # $builder->update(foo => { created_on => \"NOW()" });
@@ -99,7 +110,7 @@ sub update {
         } else {
             # normal values
             push @columns, "$quoted_col = ?";
-            push @bind_columns, $args->{$col};
+            push @bind_columns, $val;
         }
     }
 
@@ -133,9 +144,7 @@ sub select {
 sub select_query {
     my ($self, $table, $fields, $where, $opt) = @_;
 
-    my $stmt = $self->select_class->new(
-        name_sep   => $self->name_sep,
-        quote_char => $self->quote_char,
+    my $stmt = $self->new_select(
         select     => $fields,
     );
     $stmt->add_from($table);
@@ -184,7 +193,6 @@ __END__
 =encoding utf8
 
 =for test_synopsis
-
 my ($table, @fields, %where, %opt, %values, %set, $sql, @binds);
 
 =head1 NAME
@@ -208,6 +216,7 @@ SQL::Maker - Yet another SQL builder
 
     # UPDATE
     ($sql, @binds) = $builder->update($table, \%set, \%where);
+    ($sql, @binds) = $builder->update($table, \@set, \%where);
 
 =head1 DESCRIPTION
 
@@ -244,6 +253,12 @@ This is the character that separates a table and column name.
 Default: '.'
 
 =back
+
+=item my $select = $builder->new_select();
+
+Create new instance of L<SQL::Builder::Select> from the settings from B<$builder>.
+
+This method returns instance of L<SQL::Builder::Select>.
 
 =item my ($sql, @binds) = $builder->select($table, \@fields, \%where, \%opt);
 
@@ -331,7 +346,11 @@ SQL::Maker creates where clause from this hashref via L<SQL::Maker::Condition>.
 
 =item my ($sql, @binds) = $builder->update($table, \%set, \%where);
 
+=item my ($sql, @binds) = $builder->update($table, \@set, \%where);
+
 Generate UPDATE query.
+
+    my ($sql, @binds) = $builder->update('user', ['name' => 'john', email => 'john@example.com'], {user_id => 3});
 
 =over 4
 
