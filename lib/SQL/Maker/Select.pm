@@ -9,7 +9,7 @@ use Class::Accessor::Lite (
     new => 0,
     wo => [qw/distinct for_update/],
     rw => [qw/prefix/],
-    ro => [qw/quote_char name_sep/],
+    ro => [qw/quote_char name_sep new_line/],
 );
 
 sub offset {
@@ -44,6 +44,7 @@ sub new {
         group_by           => +[],
         order_by           => +[],
         prefix             => 'SELECT ',
+	new_line           => "\n",
         %args
     }, $class;
 
@@ -113,6 +114,8 @@ sub _quote {
 sub as_sql {
     my $self = shift;
     my $sql = '';
+    my $new_line = $self->new_line;
+    
     if (@{ $self->{select} }) {
         $sql .= $self->{prefix};
         $sql .= 'DISTINCT ' if $self->{distinct};
@@ -125,7 +128,7 @@ sub as_sql {
             } else {
                 $self->_quote($_) . ' AS ' .  $self->_quote($alias)
             }
-        } @{ $self->{select} }) . "\n";
+        } @{ $self->{select} }) . $new_line;
     }
 
     $sql .= 'FROM ';
@@ -156,7 +159,7 @@ sub as_sql {
              @{ $self->{from} };
     }
 
-    $sql .= "\n";
+    $sql .= $new_line;
     $sql .= $self->as_sql_where()   if $self->{where};
 
     $sql .= $self->as_sql_group_by  if $self->{group_by};
@@ -166,6 +169,7 @@ sub as_sql {
     $sql .= $self->as_sql_limit     if $self->{limit};
 
     $sql .= $self->as_sql_for_update;
+    $sql =~ s/${new_line}+$//;
 
     return $sql;
 }
@@ -175,7 +179,7 @@ sub as_sql_limit {
     my $n = $self->{limit} or
         return '';
     die "Non-numerics in limit clause ($n)" if $n =~ /\D/;
-    return sprintf "LIMIT %d%s\n", $n,
+    return sprintf "LIMIT %d%s" . $self->new_line, $n,
            ($self->{offset} ? " OFFSET " . int($self->{offset}) : "");
 }
 
@@ -200,7 +204,7 @@ sub as_sql_order_by {
                     $type ? $self->_quote($col) . " $type" : $self->_quote($col)
                 }
            } @attrs)
-           . "\n";
+           . $self->new_line;
 }
 
 sub add_group_by {
@@ -218,7 +222,7 @@ sub as_sql_group_by {
 
     return 'GROUP BY '
            . join(', ', @$elems)
-           . "\n";
+           . $self->new_line;
 }
 
 sub set_where {
@@ -239,13 +243,13 @@ sub as_sql_where {
     my $self = shift;
 
     my $where = $self->{where}->as_sql();
-    $where ? "WHERE $where\n" : '';
+    $where ? "WHERE $where" . $self->new_line : '';
 }
 
 sub as_sql_having {
     my $self = shift;
     if ($self->{having}) {
-        'HAVING ' . $self->{having}->as_sql . "\n";
+        'HAVING ' . $self->{having}->as_sql . $self->new_line;
     } else {
         ''
     }
@@ -373,7 +377,7 @@ Add new where clause.
                                    ->add_where('name' => 'john')
                                    ->add_where('type' => {IN => [qw/1 2 3/]})
                                    ->as_sql();
-    # => "SELECT c FROM foo WHERE (name = ?) AND (type IN (?,?,?))"
+    # => "SELECT c FROM foo WHERE (name = ?) AND (type IN (?, ?, ?))"
 
 =item $stmt->set_where($condition)
 
@@ -390,7 +394,7 @@ $condition should be instance of L<SQL::Maker::Condition>.
                                    ->add_from('foo')
                                    ->set_where($cond1 & $cond2)
                                    ->as_sql();
-    # => "SELECT c FROM foo WHERE ((name = ?)) AND ((type IN (?,?,?)))"
+    # => "SELECT c FROM foo WHERE ((name = ?)) AND ((type IN (?, ?, ?)))"
 
 =item $stmt->add_order_by('foo');
 
