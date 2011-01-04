@@ -2,7 +2,7 @@ package SQL::Maker;
 use strict;
 use warnings;
 use 5.008001;
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 use Class::Accessor::Lite 0.05 (
     ro => [qw/quote_char name_sep new_line driver select_class/],
 );
@@ -256,6 +256,12 @@ This is the character that separates a table and column name.
 
 Default: '.'
 
+=item new_line: Str
+
+This is the character that separates a part of statements.
+
+Default: '\n'
+
 =back
 
 =item my $select = $builder->new_select();
@@ -389,6 +395,8 @@ SQL::Maker supports plugin system. Write the code like following.
 =item Why don't you use  SQL::Abstract?
 
 I need more extensible one.
+
+So, this module contains L<SQL::Maker::Select>, the extensible B<SELECT> clause object.
 
 =back
 
