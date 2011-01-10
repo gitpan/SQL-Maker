@@ -2,7 +2,7 @@ package SQL::Maker;
 use strict;
 use warnings;
 use 5.008001;
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 use Class::Accessor::Lite 0.05 (
     ro => [qw/quote_char name_sep new_line driver select_class/],
 );
@@ -33,18 +33,21 @@ sub new {
     }
     my $driver = $args{driver};
     unless ( defined $args{quote_char} ) {
-	$args{quote_char} = do{
-	    if ($driver eq  'mysql') {
-		q{`}
-	    } else {
-		q{"}
-	    }
-	};
+    $args{quote_char} = do{
+        if ($driver eq  'mysql') {
+        q{`}
+        } else {
+        q{"}
+        }
+    };
     }
-    $args{name_sep}   ||= '.';
-    $args{new_line}   ||= "\n";
     $args{select_class} = $driver eq 'Oracle' ? 'SQL::Maker::Select::Oracle' : 'SQL::Maker::Select';
-    bless {%args}, $class;
+
+    return bless {
+        name_sep => '.',
+        new_line => "\n",
+        %args
+    }, $class;
 }
 
 sub new_select {
@@ -149,6 +152,10 @@ sub select {
 sub select_query {
     my ($self, $table, $fields, $where, $opt) = @_;
 
+    unless (ref $fields eq 'ARRAY') {
+        Carp::croak("SQL::Maker::select_query: \$fields should be ArrayRef[Str]");
+    }
+
     my $stmt = $self->new_select(
         select     => $fields,
     );
@@ -163,9 +170,9 @@ sub select_query {
     }
 
     if (my $o = $opt->{order_by}) {
-        if (ref $o) {
+        if (ref $o eq 'ARRAY') {
             for my $order (@$o) {
-                if (ref $order) {
+                if (ref $order eq 'HASH') {
                     # Skinny-ish [{foo => 'DESC'}, {bar => 'ASC'}]
                     $stmt->add_order_by(%$order);
                 } else {
@@ -173,6 +180,9 @@ sub select_query {
                     $stmt->add_order_by(\$order);
                 }
             }
+        } elsif (ref $o eq 'HASH') {
+            # Skinny-ish {foo => 'DESC'}
+            $stmt->add_order_by(%$o);
         } else {
             # just 'foo DESC, bar ASC'
             $stmt->add_order_by(\$o);
@@ -275,6 +285,11 @@ This method returns instance of L<SQL::Builder::Select>.
 
 =item my ($sql, @binds) = $builder->select($table|\@tables, \@fields, \%where, \%opt);
 
+    my ($sql, @binds) = $builder->select('user', ['*'], {name => 'john'}, {order_by => 'user_id DESC'});
+    # =>
+    #   SELECT * FROM `user` WHERE (`name` = ?) ORDER BY user_id DESC
+    #   ['john']
+
 This method returns SQL string and bind variables for SELECT statement.
 
 =over 4
@@ -315,6 +330,17 @@ This option makes 'LIMIT $n' clause.
 
 This option makes 'OFFSET $n' clause.
 
+=item $opt->{order_by}
+
+This option makes B<ORDER BY> clause
+
+You can write it as following forms:
+
+    $builder->select(..., order_by => 'foo DESC, bar ASC');
+    $builder->select(..., order_by => ['foo DESC', 'bar ASC']);
+    $builder->select(..., order_by => {foo => 'DESC'});
+    $builder->select(..., order_by => [{foo => 'DESC'}, {bar => 'ASC'}]);
+
 =item $opt->{having}
 
 This option makes HAVING clause
@@ -328,6 +354,11 @@ This option makes 'FOR UPDATE" clause.
 =back
 
 =item my ($sql, @binds) = $builder->insert($table, \%values);
+
+    my ($sql, @binds) = $builder->insert(user => {name => 'john'});
+    # =>
+    #    INSERT INTO `user` (`name`) VALUES (?)
+    #    ['john']
 
 Generate INSERT query.
 
@@ -344,6 +375,11 @@ This is a values for INSERT statement.
 =back
 
 =item my ($sql, @binds) = $builder->delete($table, \%where);
+
+    my ($sql, @binds) = $builder->delete($table, \%where);
+    # =>
+    #    DELETE FROM `user` WHERE (`name` = ?)
+    #    ['john']
 
 Generate DELETE query.
 
@@ -366,6 +402,9 @@ SQL::Maker creates where clause from this hashref via L<SQL::Maker::Condition>.
 Generate UPDATE query.
 
     my ($sql, @binds) = $builder->update('user', ['name' => 'john', email => 'john@example.com'], {user_id => 3});
+    # =>
+    #    'UPDATE `user` SET `name` = ?, `email` = ? WHERE (`user_id` = ?)'
+    #    ['john','john@example.com',3]
 
 =over 4
 
