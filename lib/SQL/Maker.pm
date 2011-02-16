@@ -2,7 +2,7 @@ package SQL::Maker;
 use strict;
 use warnings;
 use 5.008001;
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 use Class::Accessor::Lite 0.05 (
     ro => [qw/quote_char name_sep new_line driver select_class/],
 );
@@ -48,6 +48,15 @@ sub new {
         new_line => "\n",
         %args
     }, $class;
+}
+
+sub new_condition {
+    my $self = shift;
+
+    SQL::Maker::Condition->new(
+        quote_char => $self->{quote_char},
+        name_sep   => $self->{name_sep},
+    );
 }
 
 sub new_select {
