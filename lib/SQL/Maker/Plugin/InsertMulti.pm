@@ -8,16 +8,18 @@ our @EXPORT = qw/insert_multi/;
 # for mysql
 sub insert_multi {
     my ($self, $table, $args) = @_;
+    return unless @$args;
 
-    my (@cols, @bind);
+    # setting cols
+    my @cols;
+    my ($first_arg,) = @{$args};
+    for my $col (keys %{$first_arg}) {
+        push @cols, $col;
+    }
+
+    my @bind;
     for my $arg (@{$args}) {
-        if (scalar(@cols)==0) {
-            for my $col (keys %{$arg}) {
-                push @cols, $col;
-            }
-        }
-
-        for my $col (keys %{$arg}) {
+        for my $col (@cols) {
             push @bind, $arg->{$col};
         }
     }
@@ -37,11 +39,15 @@ __END__
 =for test_synopsis
 my ($table, @rows);
 
+=head1 NAME
+
+SQL::Maker::Plugin::InsertMulti - insert multiple rows at once on MySQL
+
 =head1 SYNOPSIS
 
     use SQL::Maker;
 
-    SQL::Maker->load_plugin('SQL::Maker::Plugin::InsertMulti');
+    SQL::Maker->load_plugin('InsertMulti');
 
     my $builder = SQL::Maker->new();
     my ($sql, @binds) = $builder->insert_multi($table, \@rows);
