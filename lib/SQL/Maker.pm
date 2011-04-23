@@ -2,7 +2,7 @@ package SQL::Maker;
 use strict;
 use warnings;
 use 5.008001;
-our $VERSION = '0.12';
+our $VERSION = '0.13';
 use Class::Accessor::Lite 0.05 (
     ro => [qw/quote_char name_sep new_line driver select_class/],
 );
@@ -71,27 +71,36 @@ sub new_select {
     );
 }
 
-# $builder->insert($table, \%values);
+# $builder->insert($table, \%values, \%opt);
+# $builder->insert($table, \@values, \%opt);
 sub insert {
     my ($self, $table, $values, $opt) = @_;
-    my $prefix = $opt->{prefix} || 'INSERT';
+    my $prefix = $opt->{prefix} || 'INSERT INTO';
 
     my $quoted_table = $self->_quote($table);
 
-    my (@columns, @bind_columns, @quoted_columns);
-    while (my ($col, $val) = each %$values) {
+    my (@columns, @bind_columns, @quoted_columns, @values);
+    @values = ref $values eq 'HASH' ? %$values : @$values;
+    while (my ($col, $val) = splice(@values, 0, 2)) {
         push @quoted_columns, $self->_quote($col);
         if (ref($val) eq 'SCALAR') {
             # $builder->insert(foo => { created_on => \"NOW()" });
             push @columns, $$val;
-        } else {
+        }
+        elsif (ref($val) eq 'REF' && ref($$val) eq 'ARRAY') {
+            # $builder->insert( foo => \[ 'UNIX_TIMESTAMP(?)', '2011-04-12 00:34:12' ] );
+            my ( $stmt, @sub_bind ) = @{$$val};
+            push @columns, $stmt;
+            push @bind_columns, @sub_bind;
+        }
+        else {
             # normal values
             push @columns, '?';
             push @bind_columns, $val;
         }
     }
 
-    my $sql  = "$prefix INTO $quoted_table" . $self->new_line;
+    my $sql  = "$prefix $quoted_table" . $self->new_line;
        $sql .= '(' . join(', ', @quoted_columns) .')' . $self->new_line .
                'VALUES (' . join(', ', @columns) . ')';
 
@@ -121,10 +130,17 @@ sub update {
     my @args = ref $args eq 'HASH' ? %$args : @$args;
     while (my ($col, $val) = splice @args, 0, 2) {
         my $quoted_col = $self->_quote($col);
-        if (ref($val) eq 'SCALAR') {
+        if (ref $val eq 'SCALAR') {
             # $builder->update(foo => { created_on => \"NOW()" });
             push @columns, "$quoted_col = " . $$val;
-        } else {
+        }
+        elsif ( ref $val eq 'REF' && ref $$val eq 'ARRAY' ) {
+            # $builder->update( foo => \[ 'VALUES(foo) + ?', 10 ] );
+            my ( $stmt, @sub_bind ) = @{$$val};
+            push @columns, "$quoted_col = " . $stmt;
+            push @bind_columns, @sub_bind;
+        }
+        else {
             # normal values
             push @columns, "$quoted_col = ?";
             push @bind_columns, $val;
@@ -168,7 +184,18 @@ sub select_query {
     my $stmt = $self->new_select(
         select     => $fields,
     );
-    $stmt->add_from(ref $table eq 'ARRAY' ? @$table : $table);
+
+    unless ( ref $table ) {
+        # $table = 'foo'
+        $stmt->add_from( $table );
+    }
+    else {
+        # $table = [ 'foo', [ bar => 'b' ] ]
+        for ( @$table ) {
+            $stmt->add_from( ref $_ ? @$_ : $_ );
+        }
+    }
+
     $stmt->prefix($opt->{prefix}) if $opt->{prefix};
 
     if ( $where ) {
