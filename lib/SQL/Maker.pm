@@ -2,7 +2,7 @@ package SQL::Maker;
 use strict;
 use warnings;
 use 5.008001;
-our $VERSION = '0.13';
+our $VERSION = '0.14';
 use Class::Accessor::Lite 0.05 (
     ro => [qw/quote_char name_sep new_line driver select_class/],
 );
@@ -192,7 +192,7 @@ sub select_query {
     else {
         # $table = [ 'foo', [ bar => 'b' ] ]
         for ( @$table ) {
-            $stmt->add_from( ref $_ ? @$_ : $_ );
+            $stmt->add_from( ref $_ eq 'ARRAY' ? @$_ : $_ );
         }
     }
 
@@ -295,7 +295,7 @@ Driver name is required. The driver type is needed to create SQL string.
 
 =item quote_char: Str
 
-This is the character that a table or column name will be quoted with. 
+This is the character that a table or column name will be quoted with.
 
 Default: auto detect from $driver.
 
