@@ -30,4 +30,4 @@ requires:
 resources:
   license: http://dev.perl.org/licenses/
   repository: git://github.com/tokuhirom/SQL-Maker.git
-version: 1.01
+version: 1.02

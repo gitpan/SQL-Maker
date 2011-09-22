@@ -2,7 +2,7 @@ package SQL::Maker;
 use strict;
 use warnings;
 use 5.008001;
-our $VERSION = '1.01';
+our $VERSION = '1.02';
 use Class::Accessor::Lite 0.05 (
     ro => [qw/quote_char name_sep new_line driver select_class/],
 );
@@ -313,9 +313,9 @@ Default: '\n'
 
 =item my $select = $builder->new_select(%args|\%args);
 
-Create new instance of L<SQL::Builder::Select> from the settings from B<$builder>.
+Create new instance of L<SQL::Maker::Select> from the settings from B<$builder>.
 
-This method returns instance of L<SQL::Builder::Select>.
+This method returns instance of L<SQL::Maker::Select>.
 
 =item my ($sql, @binds) = $builder->select($table|\@tables, \@fields, \%where, \%opt);
 
