@@ -1,16 +1,15 @@
 ---
 abstract: 'Yet another SQL builder'
 author:
-  - 'Tokuhiro Matsuno <tokuhirom AAJKLFJEF GMAIL COM>'
+  - 'Tokuhiro Matsuno E<lt>tokuhirom AAJKLFJEF@ GMAIL COME<gt>'
 build_requires:
-  ExtUtils::MakeMaker: 6.42
-  Test::More: 0.96
+  Test::More: 0.98
   Test::Requires: 0
   Tie::IxHash: 0
 configure_requires:
-  ExtUtils::MakeMaker: 6.42
-distribution_type: module
-generated_by: 'Module::Install version 1.01'
+  Module::Build: 0.38
+dynamic_config: 0
+generated_by: 'Module::Build version 0.38, CPAN::Meta::Converter version 2.112621'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -21,13 +20,37 @@ no_index:
     - inc
     - t
     - xt
+provides:
+  SQL::Maker:
+    file: lib/SQL/Maker.pm
+    version: 1.03
+  SQL::Maker::Condition:
+    file: lib/SQL/Maker/Condition.pm
+    version: 0
+  SQL::Maker::Plugin::InsertMulti:
+    file: lib/SQL/Maker/Plugin/InsertMulti.pm
+    version: 0
+  SQL::Maker::SQLType:
+    file: lib/SQL/Maker/SQLType.pm
+    version: 0
+  SQL::Maker::Select:
+    file: lib/SQL/Maker/Select.pm
+    version: 0
+  SQL::Maker::Select::Oracle:
+    file: lib/SQL/Maker/Select/Oracle.pm
+    version: 0
+  SQL::Maker::SelectSet:
+    file: lib/SQL/Maker/SelectSet.pm
+    version: 0
+  SQL::Maker::Util:
+    file: lib/SQL/Maker/Util.pm
+    version: 0
 requires:
   Class::Accessor::Lite: 0.05
   DBI: 0
   Module::Load: 0
   parent: 0
-  perl: 5.8.1
+  perl: 5.008001
 resources:
   license: http://dev.perl.org/licenses/
-  repository: git://github.com/tokuhirom/SQL-Maker.git
-version: 1.02
+version: 1.03

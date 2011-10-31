@@ -2,7 +2,7 @@ package SQL::Maker;
 use strict;
 use warnings;
 use 5.008001;
-our $VERSION = '1.02';
+our $VERSION = '1.03';
 use Class::Accessor::Lite 0.05 (
     ro => [qw/quote_char name_sep new_line driver select_class/],
 );
@@ -98,6 +98,13 @@ sub insert {
             push @columns, '?';
             push @bind_columns, $val;
         }
+    }
+
+    # Insert an empty record in SQLite.
+    # ref. https://github.com/tokuhirom/SQL-Maker/issues/11
+    if ($self->driver eq 'SQLite' && @columns==0) {
+        my $sql  = "$prefix $quoted_table" . $self->new_line . 'DEFAULT VALUES';
+        return ($sql);
     }
 
     my $sql  = "$prefix $quoted_table" . $self->new_line;
@@ -480,7 +487,7 @@ So, this module contains L<SQL::Maker::Select>, the extensible B<SELECT> clause 
 
 =head1 AUTHOR
 
-Tokuhiro Matsuno E<lt>tokuhirom AAJKLFJEF GMAIL COME<gt>
+Tokuhiro Matsuno E<lt>tokuhirom AAJKLFJEF@ GMAIL COME<gt>
 
 =head1 SEE ALSO
 
