@@ -2,7 +2,7 @@ package SQL::Maker;
 use strict;
 use warnings;
 use 5.008001;
-our $VERSION = '1.03';
+our $VERSION = '1.04';
 use Class::Accessor::Lite 0.05 (
     ro => [qw/quote_char name_sep new_line driver select_class/],
 );
@@ -13,6 +13,7 @@ use SQL::Maker::Select::Oracle;
 use SQL::Maker::Condition;
 use SQL::Maker::Util;
 use Module::Load ();
+use Scalar::Util ();
 
 sub load_plugin {
     my ($class, $role) = @_;
@@ -162,15 +163,28 @@ sub update {
     return ($sql, @bind_columns);
 }
 
-sub _make_where_clause {
+sub _make_where_condition {
     my ($self, $where) = @_;
-    my $w = SQL::Maker::Condition->new(
-        quote_char => $self->quote_char,
-        name_sep   => $self->name_sep,
-    );
-    while (my ($col, $val) = each %$where) {
+
+    return $self->new_condition unless $where;
+    if ( Scalar::Util::blessed( $where ) and $where->can('as_sql') ) {
+        return $where;
+    }
+
+    my $w = $self->new_condition;
+    my @w = ref $where eq 'ARRAY' ? @$where : %$where;
+    while (my ($col, $val) = splice @w, 0, 2) {
         $w->add($col => $val);
     }
+    return $w;
+}
+
+sub _make_where_clause {
+    my ($self, $where) = @_;
+
+    return ['', []] unless $where;
+
+    my $w = $self->_make_where_condition($where);
     my $sql = $w->as_sql(1);
     return [$sql ? " WHERE $sql" : '', [$w->bind]];
 }
@@ -192,23 +206,28 @@ sub select_query {
         select     => $fields,
     );
 
-    unless ( ref $table ) {
-        # $table = 'foo'
-        $stmt->add_from( $table );
-    }
-    else {
-        # $table = [ 'foo', [ bar => 'b' ] ]
-        for ( @$table ) {
-            $stmt->add_from( ref $_ eq 'ARRAY' ? @$_ : $_ );
+    if ( defined $table ) {
+        unless ( ref $table ) {
+            # $table = 'foo'
+            $stmt->add_from( $table );
+        }
+        else {
+            # $table = [ 'foo', [ bar => 'b' ] ]
+            for ( @$table ) {
+                $stmt->add_from( ref $_ eq 'ARRAY' ? @$_ : $_ );
+            }
         }
     }
 
     $stmt->prefix($opt->{prefix}) if $opt->{prefix};
 
     if ( $where ) {
-        my @w = ref $where eq 'ARRAY' ? @$where : %$where;
-        while (my ($col, $val) = splice @w, 0, 2) {
-            $stmt->add_where($col => $val);
+        $stmt->set_where($self->_make_where_condition($where));
+    }
+
+    if ( my $joins = $opt->{joins} ) {
+        for my $join ( @$joins ) {
+            $stmt->add_join(ref $join eq 'ARRAY' ? @$join : $join);
         }
     }
 
@@ -324,7 +343,7 @@ Create new instance of L<SQL::Maker::Select> from the settings from B<$builder>.
 
 This method returns instance of L<SQL::Maker::Select>.
 
-=item my ($sql, @binds) = $builder->select($table|\@tables, \@fields, \%where, \%opt);
+=item my ($sql, @binds) = $builder->select($table|\@tables, \@fields, \%where|\@where|$where, \%opt);
 
     my ($sql, @binds) = $builder->select('user', ['*'], {name => 'john'}, {order_by => 'user_id DESC'});
     # =>
@@ -347,7 +366,11 @@ This is a list for retrieving fields from database.
 
 =item \%where
 
-SQL::Maker creates where clause from this hashref via L<SQL::Maker::Condition>.
+=item \@where
+
+=item $where
+
+where clause from hashref or arrayref via L<SQL::Maker::Condition>, or L<SQL::Maker::Condition> object.
 
 =item \%opt
 
@@ -390,11 +413,15 @@ This option makes HAVING clause
 
 This option makes 'FOR UPDATE" clause.
 
-=back
+=item $opt->{joins}
+
+This option makes 'JOIN' via L<SQL::Maker::Condition>.
 
 =back
 
-=item my ($sql, @binds) = $builder->insert($table, \%values);
+=back
+
+=item my ($sql, @binds) = $builder->insert($table, \%values|\@values);
 
     my ($sql, @binds) = $builder->insert(user => {name => 'john'});
     # =>
@@ -415,7 +442,7 @@ This is a values for INSERT statement.
 
 =back
 
-=item my ($sql, @binds) = $builder->delete($table, \%where);
+=item my ($sql, @binds) = $builder->delete($table, \%where|\@where|$where);
 
     my ($sql, @binds) = $builder->delete($table, \%where);
     # =>
@@ -432,13 +459,15 @@ Table name in scalar.
 
 =item \%where
 
-SQL::Maker creates where clause from this hashref via L<SQL::Maker::Condition>.
+=item \@where
+
+=item $where
+
+where clause from hashref or arrayref via L<SQL::Maker::Condition>, or L<SQL::Maker::Condition> object.
 
 =back
 
-=item my ($sql, @binds) = $builder->update($table, \%set, \%where);
-
-=item my ($sql, @binds) = $builder->update($table, \@set, \%where);
+=item my ($sql, @binds) = $builder->update($table, \%set|@set, \%where|\@where|$where);
 
 Generate UPDATE query.
 
@@ -459,7 +488,11 @@ Setting values.
 
 =item \%where
 
-SQL::Maker creates where clause from this hashref via L<SQL::Maker::Condition>.
+=item \@where
+
+=item $where
+
+where clause from hashref or arrayref via L<SQL::Maker::Condition>, or L<SQL::Maker::Condition> object.
 
 =back
 
