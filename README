@@ -108,6 +108,16 @@ METHODS
                     $builder->select(..., order_by => {foo => 'DESC'});
                     $builder->select(..., order_by => [{foo => 'DESC'}, {bar => 'ASC'}]);
 
+            $opt->{group_by}
+                This option makes GROUP BY clause
+
+                You can write it as following forms:
+
+                    $builder->select(..., group_by => 'foo DESC, bar ASC');
+                    $builder->select(..., group_by => ['foo DESC', 'bar ASC']);
+                    $builder->select(..., group_by => {foo => 'DESC'});
+                    $builder->select(..., group_by => [{foo => 'DESC'}, {bar => 'ASC'}]);
+
             $opt->{having}
                 This option makes HAVING clause
 

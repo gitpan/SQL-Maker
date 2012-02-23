@@ -2,7 +2,7 @@ package SQL::Maker;
 use strict;
 use warnings;
 use 5.008001;
-our $VERSION = '1.04';
+our $VERSION = '1.05';
 use Class::Accessor::Lite 0.05 (
     ro => [qw/quote_char name_sep new_line driver select_class/],
 );
@@ -250,6 +250,25 @@ sub select_query {
             $stmt->add_order_by(\$o);
         }
     }
+    if (my $o = $opt->{group_by}) {
+        if (ref $o eq 'ARRAY') {
+            for my $group (@$o) {
+                if (ref $group eq 'HASH') {
+                    # Skinny-ish [{foo => 'DESC'}, {bar => 'ASC'}]
+                    $stmt->add_group_by(%$group);
+                } else {
+                    # just ['foo DESC', 'bar ASC']
+                    $stmt->add_group_by(\$group);
+                }
+            }
+        } elsif (ref $o eq 'HASH') {
+            # Skinny-ish {foo => 'DESC'}
+            $stmt->add_group_by(%$o);
+        } else {
+            # just 'foo DESC, bar ASC'
+            $stmt->add_group_by(\$o);
+        }
+    }
 
     $stmt->limit( $opt->{limit} )    if $opt->{limit};
     $stmt->offset( $opt->{offset} )  if $opt->{offset};
@@ -404,6 +423,17 @@ You can write it as following forms:
     $builder->select(..., order_by => ['foo DESC', 'bar ASC']);
     $builder->select(..., order_by => {foo => 'DESC'});
     $builder->select(..., order_by => [{foo => 'DESC'}, {bar => 'ASC'}]);
+
+=item $opt->{group_by}
+
+This option makes B<GROUP BY> clause
+
+You can write it as following forms:
+
+    $builder->select(..., group_by => 'foo DESC, bar ASC');
+    $builder->select(..., group_by => ['foo DESC', 'bar ASC']);
+    $builder->select(..., group_by => {foo => 'DESC'});
+    $builder->select(..., group_by => [{foo => 'DESC'}, {bar => 'ASC'}]);
 
 =item $opt->{having}
 
