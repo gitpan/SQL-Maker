@@ -2,7 +2,7 @@ package SQL::Maker;
 use strict;
 use warnings;
 use 5.008001;
-our $VERSION = '1.05';
+our $VERSION = '1.06';
 use Class::Accessor::Lite 0.05 (
     ro => [qw/quote_char name_sep new_line driver select_class/],
 );
@@ -310,7 +310,7 @@ SQL::Maker - Yet another SQL builder
     ($sql, @binds) = $builder->insert($table, \%values);
 
     # DELETE
-    ($sql, @binds) = $builder->delete($table, \%values);
+    ($sql, @binds) = $builder->delete($table, \%where);
 
     # UPDATE
     ($sql, @binds) = $builder->update($table, \%set, \%where);

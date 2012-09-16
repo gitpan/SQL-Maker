@@ -255,6 +255,14 @@ sub add_where {
     return $self;
 }
 
+sub add_where_raw {
+    my ($self, $term, $bind) = @_;
+
+    $self->{where} ||= $self->new_condition();
+    $self->{where}->add_raw($term, $bind);
+    return $self;
+}
+
 sub as_sql_where {
     my $self = shift;
 
@@ -413,6 +421,19 @@ Add new where clause.
                                    ->add_where('type' => {IN => [qw/1 2 3/]})
                                    ->as_sql();
     # => "SELECT c FROM foo WHERE (name = ?) AND (type IN (?, ?, ?))"
+
+=item $stmt->add_where_raw('id = ?', [1])
+
+Add new where clause from raw placeholder string and bind variables.
+
+    my $stmt = SQL::Maker::Select->new()
+                                   ->add_select('c')
+                                   ->add_from('foo')
+                                   ->add_where_raw('EXISTS(SELECT * FROM bar WHERE name = ?)' => ['john'])
+                                   ->add_where_raw('type IS NOT NULL')
+                                   ->as_sql();
+    # => "SELECT c FROM foo WHERE (EXISTS(SELECT * FROM bar WHERE name = ?)) AND (type IS NOT NULL)"
+
 
 =item $stmt->set_where($condition)
 

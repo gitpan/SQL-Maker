@@ -9,7 +9,7 @@ build_requires:
 configure_requires:
   Module::Build: 0.38
 dynamic_config: 0
-generated_by: 'Module::Build version 0.38, CPAN::Meta::Converter version 2.112150'
+generated_by: 'Module::Build version 0.38, CPAN::Meta::Converter version 2.120921'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -23,7 +23,7 @@ no_index:
 provides:
   SQL::Maker:
     file: lib/SQL/Maker.pm
-    version: 1.05
+    version: 1.06
   SQL::Maker::Condition:
     file: lib/SQL/Maker/Condition.pm
     version: 0
@@ -53,4 +53,4 @@ requires:
   perl: 5.008001
 resources:
   license: http://dev.perl.org/licenses/
-version: 1.05
+version: 1.06

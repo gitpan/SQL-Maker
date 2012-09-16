@@ -4,7 +4,7 @@
       "Tokuhiro Matsuno E<lt>tokuhirom AAJKLFJEF@ GMAIL COME<gt>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Module::Build version 0.38, CPAN::Meta::Converter version 2.112150",
+   "generated_by" : "Module::Build version 0.38, CPAN::Meta::Converter version 2.120921",
    "license" : [
       "perl_5"
    ],
@@ -24,8 +24,8 @@
       "build" : {
          "requires" : {
             "Test::More" : "0.98",
-            "Test::Requires" : 0,
-            "Tie::IxHash" : 0
+            "Test::Requires" : "0",
+            "Tie::IxHash" : "0"
          }
       },
       "configure" : {
@@ -36,9 +36,9 @@
       "runtime" : {
          "requires" : {
             "Class::Accessor::Lite" : "0.05",
-            "DBI" : 0,
-            "Module::Load" : 0,
-            "parent" : 0,
+            "DBI" : "0",
+            "Module::Load" : "0",
+            "parent" : "0",
             "perl" : "5.008001"
          }
       }
@@ -46,7 +46,7 @@
    "provides" : {
       "SQL::Maker" : {
          "file" : "lib/SQL/Maker.pm",
-         "version" : "1.05"
+         "version" : "1.06"
       },
       "SQL::Maker::Condition" : {
          "file" : "lib/SQL/Maker/Condition.pm",
@@ -83,5 +83,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "1.05"
+   "version" : "1.06"
 }
