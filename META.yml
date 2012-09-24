@@ -23,7 +23,7 @@ no_index:
 provides:
   SQL::Maker:
     file: lib/SQL/Maker.pm
-    version: 1.06
+    version: 1.07
   SQL::Maker::Condition:
     file: lib/SQL/Maker/Condition.pm
     version: 0
@@ -53,4 +53,4 @@ requires:
   perl: 5.008001
 resources:
   license: http://dev.perl.org/licenses/
-version: 1.06
+version: 1.07
