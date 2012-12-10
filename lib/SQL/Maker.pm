@@ -2,7 +2,7 @@ package SQL::Maker;
 use strict;
 use warnings;
 use 5.008001;
-our $VERSION = '1.07';
+our $VERSION = '1.08';
 use Class::Accessor::Lite 0.05 (
     ro => [qw/quote_char name_sep new_line driver select_class/],
 );
@@ -133,8 +133,21 @@ sub delete {
 sub update {
     my ($self, $table, $args, $where) = @_;
 
+    my ($columns, $bind_columns) = $self->make_set_clause($args);
+
+    my $w = $self->_make_where_clause($where);
+    push @$bind_columns, @{$w->[1]};
+
+    my $quoted_table = $self->_quote($table);
+    my $sql = "UPDATE $quoted_table SET " . join(', ', @$columns) . $w->[0];
+    return ($sql, @$bind_columns);
+}
+
+# make "SET" clause.
+sub make_set_clause {
+    my ($self, $args) = @_;
+
     my (@columns, @bind_columns);
-    # make "SET" clause.
     my @args = ref $args eq 'HASH' ? %$args : @$args;
     while (my ($col, $val) = splice @args, 0, 2) {
         my $quoted_col = $self->_quote($col);
@@ -154,13 +167,7 @@ sub update {
             push @bind_columns, $val;
         }
     }
-
-    my $w = $self->_make_where_clause($where);
-    push @bind_columns, @{$w->[1]};
-
-    my $quoted_table = $self->_quote($table);
-    my $sql = "UPDATE $quoted_table SET " . join(', ', @columns) . $w->[0];
-    return ($sql, @bind_columns);
+    return (\@columns, \@bind_columns);
 }
 
 sub _make_where_condition {
