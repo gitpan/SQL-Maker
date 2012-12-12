@@ -46,7 +46,7 @@
    "provides" : {
       "SQL::Maker" : {
          "file" : "lib/SQL/Maker.pm",
-         "version" : "1.08"
+         "version" : "1.09"
       },
       "SQL::Maker::Condition" : {
          "file" : "lib/SQL/Maker/Condition.pm",
@@ -54,6 +54,10 @@
       },
       "SQL::Maker::Plugin::InsertMulti" : {
          "file" : "lib/SQL/Maker/Plugin/InsertMulti.pm",
+         "version" : 0
+      },
+      "SQL::Maker::Plugin::InsertOnDuplicate" : {
+         "file" : "lib/SQL/Maker/Plugin/InsertOnDuplicate.pm",
          "version" : 0
       },
       "SQL::Maker::SQLType" : {
@@ -83,5 +87,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "1.08"
+   "version" : "1.09"
 }

@@ -23,12 +23,15 @@ no_index:
 provides:
   SQL::Maker:
     file: lib/SQL/Maker.pm
-    version: 1.08
+    version: 1.09
   SQL::Maker::Condition:
     file: lib/SQL/Maker/Condition.pm
     version: 0
   SQL::Maker::Plugin::InsertMulti:
     file: lib/SQL/Maker/Plugin/InsertMulti.pm
+    version: 0
+  SQL::Maker::Plugin::InsertOnDuplicate:
+    file: lib/SQL/Maker/Plugin/InsertOnDuplicate.pm
     version: 0
   SQL::Maker::SQLType:
     file: lib/SQL/Maker/SQLType.pm
@@ -53,4 +56,4 @@ requires:
   perl: 5.008001
 resources:
   license: http://dev.perl.org/licenses/
-version: 1.08
+version: 1.09
