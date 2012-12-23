@@ -2,7 +2,7 @@ package SQL::Maker;
 use strict;
 use warnings;
 use 5.008001;
-our $VERSION = '1.09';
+our $VERSION = '1.10';
 use Class::Accessor::Lite 0.05 (
     ro => [qw/quote_char name_sep new_line driver select_class/],
 );
@@ -532,6 +532,10 @@ Setting values.
 where clause from hashref or arrayref via L<SQL::Maker::Condition>, or L<SQL::Maker::Condition> object.
 
 =back
+
+=item $builder->new_condition()
+
+Create new L<SQL::Maker::Condition> object from C< $builder > settings.
 
 =back
 

@@ -179,6 +179,9 @@ METHODS
             where clause from hashref or arrayref via SQL::Maker::Condition,
             or SQL::Maker::Condition object.
 
+    $builder->new_condition()
+        Create new SQL::Maker::Condition object from $builder settings.
+
 PLUGINS
     SQL::Maker supports plugin system. Write the code like following.
 
