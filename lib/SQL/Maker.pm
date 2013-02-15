@@ -2,7 +2,7 @@ package SQL::Maker;
 use strict;
 use warnings;
 use 5.008001;
-our $VERSION = '1.10';
+our $VERSION = '1.11';
 use Class::Accessor::Lite 0.05 (
     ro => [qw/quote_char name_sep new_line driver select_class/],
 );
@@ -168,6 +168,12 @@ sub make_set_clause {
         }
     }
     return (\@columns, \@bind_columns);
+}
+
+sub where {
+    my ($self, $where) = @_;
+    my $cond = $self->_make_where_condition($where);
+    return ($cond->as_sql(), $cond->bind());
 }
 
 sub _make_where_condition {
@@ -536,6 +542,14 @@ where clause from hashref or arrayref via L<SQL::Maker::Condition>, or L<SQL::Ma
 =item $builder->new_condition()
 
 Create new L<SQL::Maker::Condition> object from C< $builder > settings.
+
+=item my ($sql, @binds) = $builder->where(\%where)
+
+=item my ($sql, @binds) = $builder->where(\@where)
+
+=item my ($sql, @binds) = $builder->where(\@where)
+
+Where clause from hashref or arrayref via L<SQL::Maker::Condition>, or L<SQL::Maker::Condition> object.
 
 =back
 

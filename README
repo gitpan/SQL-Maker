@@ -182,6 +182,12 @@ METHODS
     $builder->new_condition()
         Create new SQL::Maker::Condition object from $builder settings.
 
+    my ($sql, @binds) = $builder->where(\%where)
+    my ($sql, @binds) = $builder->where(\@where)
+    my ($sql, @binds) = $builder->where(\@where)
+        Where clause from hashref or arrayref via SQL::Maker::Condition, or
+        SQL::Maker::Condition object.
+
 PLUGINS
     SQL::Maker supports plugin system. Write the code like following.
 
