@@ -1,15 +1,17 @@
 ---
 abstract: 'Yet another SQL builder'
 author:
-  - 'Tokuhiro Matsuno E<lt>tokuhirom AAJKLFJEF@ GMAIL COME<gt>'
+  - 'Tokuhiro Matsuno <tokuhirom AAJKLFJEF@ GMAIL COM>'
 build_requires:
   Test::More: 0.98
   Test::Requires: 0
   Tie::IxHash: 0
 configure_requires:
+  CPAN::Meta: 0
+  CPAN::Meta::Prereqs: 0
   Module::Build: 0.38
 dynamic_config: 0
-generated_by: 'Module::Build version 0.4003, CPAN::Meta::Converter version 2.120921'
+generated_by: 'Minilla/v0.5.3, CPAN::Meta::Converter version 2.130880'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -17,43 +19,54 @@ meta-spec:
 name: SQL-Maker
 no_index:
   directory:
-    - inc
     - t
     - xt
+    - inc
+    - share
+    - eg
+    - examples
+    - author
 provides:
   SQL::Maker:
     file: lib/SQL/Maker.pm
-    version: 1.11
+    version: 1.12
   SQL::Maker::Condition:
     file: lib/SQL/Maker/Condition.pm
-    version: 0
   SQL::Maker::Plugin::InsertMulti:
     file: lib/SQL/Maker/Plugin/InsertMulti.pm
-    version: 0
   SQL::Maker::Plugin::InsertOnDuplicate:
     file: lib/SQL/Maker/Plugin/InsertOnDuplicate.pm
-    version: 0
   SQL::Maker::SQLType:
     file: lib/SQL/Maker/SQLType.pm
-    version: 0
   SQL::Maker::Select:
     file: lib/SQL/Maker/Select.pm
-    version: 0
   SQL::Maker::Select::Oracle:
     file: lib/SQL/Maker/Select/Oracle.pm
-    version: 0
   SQL::Maker::SelectSet:
     file: lib/SQL/Maker/SelectSet.pm
-    version: 0
   SQL::Maker::Util:
     file: lib/SQL/Maker/Util.pm
-    version: 0
 requires:
   Class::Accessor::Lite: 0.05
   DBI: 0
   Module::Load: 0
+  Scalar::Util: 0
   parent: 0
   perl: 5.008001
 resources:
-  license: http://dev.perl.org/licenses/
-version: 1.11
+  bugtracker: https://github.com/tokuhirom/SQL-Maker/issues
+  homepage: https://github.com/tokuhirom/SQL-Maker
+  repository: git://github.com/tokuhirom/SQL-Maker.git
+version: 1.12
+x_contributors:
+  - 'lestrrat <lestrrat+github@gmail.com>'
+  - 'makamaka <makamaka.donzoko@gmail.com>'
+  - 'Atsushi Kobayashi <nekokak@gmail.com>'
+  - 'yamaguchi.toru <zigorou@cpan.org>'
+  - 'Fuji, Goro <gfuji@cpan.org>'
+  - 'issm <issmxx@gmail.com>'
+  - 'Masahiro Chiba <nihen@megabbs.com>'
+  - 'Masahiro Chiba <chiba@everqueue.com>'
+  - 'Toshio Ito <debug.ito@gmail.com>'
+  - 'Masayuki Matsuki <y.songmu@gmail.com>'
+  - 'tokuhirom <tokuhirom@gmail.com>'

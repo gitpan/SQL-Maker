@@ -1,13 +1,11 @@
 {
    "abstract" : "Yet another SQL builder",
    "author" : [
-      "Tokuhiro Matsuno E<lt>tokuhirom AAJKLFJEF@ GMAIL COME<gt>"
+      "Tokuhiro Matsuno <tokuhirom AAJKLFJEF@ GMAIL COM>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Module::Build version 0.4003, CPAN::Meta::Converter version 2.120921",
-   "license" : [
-      "perl_5"
-   ],
+   "generated_by" : "Minilla/v0.5.3",
+   "license" : "perl_5",
    "meta-spec" : {
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
       "version" : "2"
@@ -15,22 +13,29 @@
    "name" : "SQL-Maker",
    "no_index" : {
       "directory" : [
-         "inc",
          "t",
-         "xt"
+         "xt",
+         "inc",
+         "share",
+         "eg",
+         "examples",
+         "author"
       ]
    },
    "prereqs" : {
-      "build" : {
-         "requires" : {
-            "Test::More" : "0.98",
-            "Test::Requires" : "0",
-            "Tie::IxHash" : "0"
-         }
-      },
       "configure" : {
          "requires" : {
+            "CPAN::Meta" : "0",
+            "CPAN::Meta::Prereqs" : "0",
             "Module::Build" : "0.38"
+         }
+      },
+      "develop" : {
+         "requires" : {
+            "Test::CPAN::Meta" : "0",
+            "Test::MinimumVersion" : "0.10108",
+            "Test::Pod" : "1.41",
+            "Test::Spellunker" : "v0.2.7"
          }
       },
       "runtime" : {
@@ -38,54 +43,72 @@
             "Class::Accessor::Lite" : "0.05",
             "DBI" : "0",
             "Module::Load" : "0",
+            "Scalar::Util" : "0",
             "parent" : "0",
             "perl" : "5.008001"
+         }
+      },
+      "test" : {
+         "requires" : {
+            "Test::More" : "0.98",
+            "Test::Requires" : "0",
+            "Tie::IxHash" : "0"
          }
       }
    },
    "provides" : {
       "SQL::Maker" : {
          "file" : "lib/SQL/Maker.pm",
-         "version" : "1.11"
+         "version" : "1.12"
       },
       "SQL::Maker::Condition" : {
-         "file" : "lib/SQL/Maker/Condition.pm",
-         "version" : 0
+         "file" : "lib/SQL/Maker/Condition.pm"
       },
       "SQL::Maker::Plugin::InsertMulti" : {
-         "file" : "lib/SQL/Maker/Plugin/InsertMulti.pm",
-         "version" : 0
+         "file" : "lib/SQL/Maker/Plugin/InsertMulti.pm"
       },
       "SQL::Maker::Plugin::InsertOnDuplicate" : {
-         "file" : "lib/SQL/Maker/Plugin/InsertOnDuplicate.pm",
-         "version" : 0
+         "file" : "lib/SQL/Maker/Plugin/InsertOnDuplicate.pm"
       },
       "SQL::Maker::SQLType" : {
-         "file" : "lib/SQL/Maker/SQLType.pm",
-         "version" : 0
+         "file" : "lib/SQL/Maker/SQLType.pm"
       },
       "SQL::Maker::Select" : {
-         "file" : "lib/SQL/Maker/Select.pm",
-         "version" : 0
+         "file" : "lib/SQL/Maker/Select.pm"
       },
       "SQL::Maker::Select::Oracle" : {
-         "file" : "lib/SQL/Maker/Select/Oracle.pm",
-         "version" : 0
+         "file" : "lib/SQL/Maker/Select/Oracle.pm"
       },
       "SQL::Maker::SelectSet" : {
-         "file" : "lib/SQL/Maker/SelectSet.pm",
-         "version" : 0
+         "file" : "lib/SQL/Maker/SelectSet.pm"
       },
       "SQL::Maker::Util" : {
-         "file" : "lib/SQL/Maker/Util.pm",
-         "version" : 0
+         "file" : "lib/SQL/Maker/Util.pm"
       }
    },
    "release_status" : "stable",
    "resources" : {
-      "license" : [
-         "http://dev.perl.org/licenses/"
-      ]
+      "bugtracker" : {
+         "web" : "https://github.com/tokuhirom/SQL-Maker/issues"
+      },
+      "homepage" : "https://github.com/tokuhirom/SQL-Maker",
+      "repository" : {
+         "url" : "git://github.com/tokuhirom/SQL-Maker.git",
+         "web" : "https://github.com/tokuhirom/SQL-Maker"
+      }
    },
-   "version" : "1.11"
+   "version" : "1.12",
+   "x_contributors" : [
+      "lestrrat <lestrrat+github@gmail.com>",
+      "makamaka <makamaka.donzoko@gmail.com>",
+      "Atsushi Kobayashi <nekokak@gmail.com>",
+      "yamaguchi.toru <zigorou@cpan.org>",
+      "Fuji, Goro <gfuji@cpan.org>",
+      "issm <issmxx@gmail.com>",
+      "Masahiro Chiba <nihen@megabbs.com>",
+      "Masahiro Chiba <chiba@everqueue.com>",
+      "Toshio Ito <debug.ito@gmail.com>",
+      "Masayuki Matsuki <y.songmu@gmail.com>",
+      "tokuhirom <tokuhirom@gmail.com>"
+   ]
 }

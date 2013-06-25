@@ -2,7 +2,7 @@ package SQL::Maker;
 use strict;
 use warnings;
 use 5.008001;
-our $VERSION = '1.11';
+our $VERSION = '1.12';
 use Class::Accessor::Lite 0.05 (
     ro => [qw/quote_char name_sep new_line driver select_class/],
 );
@@ -215,9 +215,10 @@ sub select_query {
         Carp::croak("SQL::Maker::select_query: \$fields should be ArrayRef[Str]");
     }
 
-    my $stmt = $self->new_select(
-        select     => $fields,
-    );
+    my $stmt = $self->new_select;
+    for my $field (@$fields) {
+        $stmt->add_select(ref $field eq 'ARRAY' ? @$field : $field);
+    }
 
     if ( defined $table ) {
         unless ( ref $table ) {
@@ -320,7 +321,7 @@ SQL::Maker - Yet another SQL builder
     ($sql, @binds) = $builder->select($table, \@fields, \%where, \%opt);
 
     # INSERT
-    ($sql, @binds) = $builder->insert($table, \%values);
+    ($sql, @binds) = $builder->insert($table, \%values, \%opt);
 
     # DELETE
     ($sql, @binds) = $builder->delete($table, \%where);
@@ -396,6 +397,10 @@ Table name for B<FROM> clause in scalar or arrayref. You can specify the instanc
 
 This is a list for retrieving fields from database.
 
+Each element of the C<@field> is a scalar or a scalar ref of the column name normally.
+If you want to specify alias of the field, you can use ArrayRef containing the pair of column
+and alias name (e.g. C<< ['foo.id' => 'foo_id'] >>).
+
 =item \%where
 
 =item \@where
@@ -464,7 +469,7 @@ This option makes 'JOIN' via L<SQL::Maker::Condition>.
 
 =back
 
-=item my ($sql, @binds) = $builder->insert($table, \%values|\@values);
+=item my ($sql, @binds) = $builder->insert($table, \%values|\@values, \%opt);
 
     my ($sql, @binds) = $builder->insert(user => {name => 'john'});
     # =>
@@ -482,6 +487,22 @@ Table name in scalar.
 =item \%values
 
 This is a values for INSERT statement.
+
+=item \%opt
+
+This is a options for INSERT statement
+
+=over 4
+
+=item $opt->{prefix}
+
+This is a prefix for INSERT statement.
+
+For example, you can provide 'INSERT IGNORE INTO' for MySQL.
+
+Default Value: 'INSERT INTO'
+
+=back
 
 =back
 

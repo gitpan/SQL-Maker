@@ -4,7 +4,6 @@ use warnings;
 use utf8;
 use SQL::Maker::Condition;
 use SQL::Maker::Util;
-use SQL::Maker::Condition;
 use Class::Accessor::Lite (
     new => 0,
     wo => [qw/distinct for_update/],
@@ -160,6 +159,13 @@ sub as_sql {
             if ( defined $join->{condition} ) {
                 if (ref $join->{condition} && ref $join->{condition} eq 'ARRAY') {
                     $sql .= ' USING ('. join(', ', map { $self->_quote($_) } @{ $join->{condition} }) . ')';
+                }
+                elsif (ref $join->{condition} && ref $join->{condition} eq 'HASH') {
+                    my @conds;
+                    for my $key (keys %{ $join->{condition} }) {
+                        push @conds, $self->_quote($key) . ' = ' . $self->_quote($join->{condition}{$key});
+                    }
+                    $sql .= ' ON ' . join(' AND ', @conds);
                 }
                 else {
                     $sql .= ' ON ' . $join->{condition};
@@ -333,31 +339,33 @@ SQL::Maker::Select - dynamic SQL generator
 
 =over 4
 
-=item my $sql = $stmt->as_sql();
+=item C<< my $sql = $stmt->as_sql(); >>
 
 Render the SQL string.
 
-=item my @bind = $stmt->bind();
+=item C<< my @bind = $stmt->bind(); >>
 
 Get bind variables.
 
-=item $stmt->add_select('*')
+=item C<< $stmt->add_select('*') >>
 
-=item $stmt->add_select($col => $alias)
+=item C<< $stmt->add_select($col => $alias) >>
 
-=item $stmt->add_select(\'COUNT(*)' => 'cnt')
+=item C<< $stmt->add_select(\'COUNT(*)' => 'cnt') >>
 
 Add new select term. It's quote automatically.
 
-=item $stmt->add_from($table :Str | $select :SQL::Maker::Select) : SQL::Maker::Select
+=item C<< $stmt->add_from($table :Str | $select :SQL::Maker::Select) : SQL::Maker::Select >>
 
 Add new from clause. You can specify the table name or instance of L<SQL::Maker::Select> for sub-query.
 
 I<Return:> $stmt itself.
 
-=item $stmt->add_join(user => {type => 'inner', table => 'config', condition => 'user.user_id = config.user_id'});
+=item C<< $stmt->add_join(user => {type => 'inner', table => 'config', condition => 'user.user_id = config.user_id'}); >>
 
-=item $stmt->add_join(user => {type => 'inner', table => 'config', condition => ['user_id']});
+=item C<< $stmt->add_join(user => {type => 'inner', table => 'config', condition => {'user.user_id' => 'config.user_id'}); >>
+
+=item C<< $stmt->add_join(user => {type => 'inner', table => 'config', condition => ['user_id']}); >>
 
 Add new JOIN clause. If you pass arrayref for 'condition' then it uses 'USING'.
 
@@ -372,6 +380,16 @@ Add new JOIN clause. If you pass arrayref for 'condition' then it uses 'USING'.
     $stmt->as_sql();
     # => 'FROM user INNER JOIN config ON user.user_id = config.user_id'
 
+    my $stmt = SQL::Maker::Select->new(quote_char => '`', name_sep => '.');
+    $stmt->add_join(
+        user => {
+            type      => 'inner',
+            table     => 'config',
+            condition => {'user.user_id' => 'config.user_id'},
+        }
+    );
+    $stmt->as_sql();
+    # => 'FROM `user` INNER JOIN `config` ON `user`.`user_id` = `config`.`user_id`'
 
     my $stmt = SQL::Maker::Select->new();
     $stmt->add_select('name');
@@ -401,7 +419,7 @@ Add new JOIN clause. If you pass arrayref for 'condition' then it uses 'USING'.
     $stmt->as_sql;
     # => "FROM (SELECT * FROM foo WHERE (hoge = ?)) bar INNER JOIN baz b1 ON bar.baz_id = b1.baz_id";
 
-=item $stmt->add_index_hint(foo => {type => 'USE', list => ['index_hint']});
+=item C<< $stmt->add_index_hint(foo => {type => 'USE', list => ['index_hint']}); >>
 
     my $stmt = SQL::Maker::Select->new();
     $stmt->add_select('name');
@@ -410,7 +428,7 @@ Add new JOIN clause. If you pass arrayref for 'condition' then it uses 'USING'.
     $stmt->as_sql();
     # => "SELECT name FROM user USE INDEX (index_hint)"
 
-=item $stmt->add_where('foo_id' => 'bar');
+=item C<< $stmt->add_where('foo_id' => 'bar'); >>
 
 Add new where clause.
 
@@ -422,7 +440,7 @@ Add new where clause.
                                    ->as_sql();
     # => "SELECT c FROM foo WHERE (name = ?) AND (type IN (?, ?, ?))"
 
-=item $stmt->add_where_raw('id = ?', [1])
+=item C<< $stmt->add_where_raw('id = ?', [1]) >>
 
 Add new where clause from raw placeholder string and bind variables.
 
@@ -435,7 +453,7 @@ Add new where clause from raw placeholder string and bind variables.
     # => "SELECT c FROM foo WHERE (EXISTS(SELECT * FROM bar WHERE name = ?)) AND (type IS NOT NULL)"
 
 
-=item $stmt->set_where($condition)
+=item C<< $stmt->set_where($condition) >>
 
 Set the where clause.
 
@@ -452,9 +470,9 @@ $condition should be instance of L<SQL::Maker::Condition>.
                                    ->as_sql();
     # => "SELECT c FROM foo WHERE ((name = ?)) AND ((type IN (?, ?, ?)))"
 
-=item $stmt->add_order_by('foo');
+=item C<< $stmt->add_order_by('foo'); >>
 
-=item $stmt->add_order_by({'foo' => 'DESC'});
+=item C<< $stmt->add_order_by({'foo' => 'DESC'}); >>
 
 Add new order by clause.
 
@@ -466,7 +484,7 @@ Add new order by clause.
                                    ->as_sql();
     # => "SELECT c FROM foo ORDER BY name DESC, id"
 
-=item $stmt->add_group_by('foo');
+=item C<< $stmt->add_group_by('foo'); >>
 
 Add new GROUP BY clause.
 
@@ -484,7 +502,7 @@ Add new GROUP BY clause.
                                    ->as_sql();
     # => "SELECT c FROM foo GROUP BY id DESC"
 
-=item $stmt->add_having(cnt => 2)
+=item C<< $stmt->add_having(cnt => 2) >>
 
 Add having clause
 
