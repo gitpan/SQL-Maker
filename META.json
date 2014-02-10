@@ -4,8 +4,10 @@
       "Tokuhiro Matsuno <tokuhirom AAJKLFJEF@ GMAIL COM>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v0.5.3",
-   "license" : "perl_5",
+   "generated_by" : "Minilla/v0.11.0",
+   "license" : [
+      "perl_5"
+   ],
    "meta-spec" : {
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
       "version" : "2"
@@ -19,7 +21,8 @@
          "share",
          "eg",
          "examples",
-         "author"
+         "author",
+         "builder"
       ]
    },
    "prereqs" : {
@@ -59,7 +62,7 @@
    "provides" : {
       "SQL::Maker" : {
          "file" : "lib/SQL/Maker.pm",
-         "version" : "1.12"
+         "version" : "1.13"
       },
       "SQL::Maker::Condition" : {
          "file" : "lib/SQL/Maker/Condition.pm"
@@ -97,7 +100,7 @@
          "web" : "https://github.com/tokuhirom/SQL-Maker"
       }
    },
-   "version" : "1.12",
+   "version" : "1.13",
    "x_contributors" : [
       "lestrrat <lestrrat+github@gmail.com>",
       "makamaka <makamaka.donzoko@gmail.com>",
@@ -109,6 +112,8 @@
       "Masahiro Chiba <chiba@everqueue.com>",
       "Toshio Ito <debug.ito@gmail.com>",
       "Masayuki Matsuki <y.songmu@gmail.com>",
-      "tokuhirom <tokuhirom@gmail.com>"
+      "Neil Bowers <neil@bowers.com>",
+      "Gelu Lupas <gvl@cpan.org>",
+      "Tokuhiro Matsuno <tokuhirom@gmail.com>"
    ]
 }
