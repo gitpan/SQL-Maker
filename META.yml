@@ -30,7 +30,7 @@ no_index:
 provides:
   SQL::Maker:
     file: lib/SQL/Maker.pm
-    version: 1.13
+    version: 1.14
   SQL::Maker::Condition:
     file: lib/SQL/Maker/Condition.pm
   SQL::Maker::Plugin::InsertMulti:
@@ -58,7 +58,7 @@ resources:
   bugtracker: https://github.com/tokuhirom/SQL-Maker/issues
   homepage: https://github.com/tokuhirom/SQL-Maker
   repository: git://github.com/tokuhirom/SQL-Maker.git
-version: 1.13
+version: 1.14
 x_contributors:
   - 'lestrrat <lestrrat+github@gmail.com>'
   - 'makamaka <makamaka.donzoko@gmail.com>'
@@ -72,4 +72,5 @@ x_contributors:
   - 'Masayuki Matsuki <y.songmu@gmail.com>'
   - 'Neil Bowers <neil@bowers.com>'
   - 'Gelu Lupas <gvl@cpan.org>'
+  - 'karupanerura <karupa@cpan.org>'
   - 'Tokuhiro Matsuno <tokuhirom@gmail.com>'

@@ -31,6 +31,7 @@ t/condition/01_where.t
 t/condition/02_make_term.t
 t/condition/03_add_raw.t
 t/condition/04_compose_empty.t
+t/condition/05_empty_values.t
 t/plugins/insert_multi/01_insert_multi.t
 t/plugins/insert_on_duplicate/01_insert_on_duplicate.t
 t/select/01_statement.t
