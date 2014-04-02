@@ -2,7 +2,7 @@ package SQL::Maker;
 use strict;
 use warnings;
 use 5.008001;
-our $VERSION = '1.14';
+our $VERSION = '1.15';
 use Class::Accessor::Lite 0.05 (
     ro => [qw/quote_char name_sep new_line driver select_class/],
 );
@@ -291,6 +291,9 @@ sub select_query {
             $stmt->add_group_by(\$o);
         }
     }
+    if (my $o = $opt->{index_hint}) {
+        $stmt->add_index_hint($table, $o);
+    }
 
     $stmt->limit( $opt->{limit} )    if $opt->{limit};
     $stmt->offset( $opt->{offset} )  if $opt->{offset};
@@ -478,6 +481,17 @@ This option adds a 'JOIN' via L<SQL::Maker::Select>.
 You can write it as follows:
 
     $builder->select(undef, ..., {joins => [[user => {table => 'group', condition => 'user.gid = group.gid'}], ...]});
+
+=item C<< $opt->{index_hint} >>
+
+This option adds an INDEX HINT like as 'USE INDEX' clause for MySQL via L<SQL::Maker::Select>.
+
+You can write it as follows:
+
+    $builder->select(..., { index_hint => 'foo' });
+    $builder->select(..., { index_hint => ['foo', 'bar'] });
+    $builder->select(..., { index_hint => { list => 'foo' });
+    $builder->select(..., { index_hint => { type => 'FORCE', list => ['foo', 'bar'] });
 
 =back
 
