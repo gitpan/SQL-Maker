@@ -3,6 +3,7 @@ abstract: 'Yet another SQL builder'
 author:
   - 'Tokuhiro Matsuno <tokuhirom AAJKLFJEF@ GMAIL COM>'
 build_requires:
+  DateTime: '0'
   Test::More: '0.98'
   Test::Requires: '0'
   Tie::IxHash: '0'
@@ -11,7 +12,7 @@ configure_requires:
   CPAN::Meta::Prereqs: '0'
   Module::Build: '0.38'
 dynamic_config: 0
-generated_by: 'Minilla/v0.13.0, CPAN::Meta::Converter version 2.133380'
+generated_by: 'Minilla/v1.1.0, CPAN::Meta::Converter version 2.141520'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -30,7 +31,7 @@ no_index:
 provides:
   SQL::Maker:
     file: lib/SQL/Maker.pm
-    version: '1.16'
+    version: '1.17'
   SQL::Maker::Condition:
     file: lib/SQL/Maker/Condition.pm
   SQL::Maker::Plugin::InsertMulti:
@@ -59,7 +60,7 @@ resources:
   bugtracker: https://github.com/tokuhirom/SQL-Maker/issues
   homepage: https://github.com/tokuhirom/SQL-Maker
   repository: git://github.com/tokuhirom/SQL-Maker.git
-version: '1.16'
+version: '1.17'
 x_authority: cpan:TOKUHIROM
 x_contributors:
   - 'lestrrat <lestrrat+github@gmail.com>'
