@@ -2,7 +2,7 @@ package SQL::Maker;
 use strict;
 use warnings;
 use 5.008001;
-our $VERSION = '1.18';
+our $VERSION = '1.19';
 use Class::Accessor::Lite 0.05 (
     ro => [qw/quote_char name_sep new_line strict driver select_class/],
 );
@@ -233,7 +233,7 @@ sub _make_where_clause {
     return ['', []] unless $where;
 
     my $w = $self->_make_where_condition($where);
-    my $sql = $w->as_sql(1);
+    my $sql = $w->as_sql();
     return [$sql ? " WHERE $sql" : '', [$w->bind]];
 }
 

@@ -8,9 +8,9 @@ build_requires:
   Test::Requires: '0'
   Tie::IxHash: '0'
 configure_requires:
-  Module::Build: '0.38'
+  Module::Build::Tiny: '0.035'
 dynamic_config: 0
-generated_by: 'Minilla/v2.1.0, CPAN::Meta::Converter version 2.141520'
+generated_by: 'Minilla/v2.1.1, CPAN::Meta::Converter version 2.141520'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -29,7 +29,7 @@ no_index:
 provides:
   SQL::Maker:
     file: lib/SQL/Maker.pm
-    version: '1.18'
+    version: '1.19'
   SQL::Maker::Condition:
     file: lib/SQL/Maker/Condition.pm
   SQL::Maker::Plugin::InsertMulti:
@@ -57,8 +57,8 @@ requires:
 resources:
   bugtracker: https://github.com/tokuhirom/SQL-Maker/issues
   homepage: https://github.com/tokuhirom/SQL-Maker
-  repository: git://github.com/tokuhirom/SQL-Maker.git
-version: '1.18'
+  repository: git://github.com/tokuhirom/SQL-Maker
+version: '1.19'
 x_authority: cpan:TOKUHIROM
 x_contributors:
   - 'lestrrat <lestrrat+github@gmail.com>'
@@ -75,6 +75,6 @@ x_contributors:
   - 'Gelu Lupas <gvl@cpan.org>'
   - 'karupanerura <karupa@cpan.org>'
   - 'soh335 <sugarbabe335@gmail.com>'
-  - 'Kazuho Oku <kazuhooku@gmail.com>'
   - 'pokutuna <popopopopokutuna@gmail.com>'
+  - 'Kazuho Oku <kazuhooku@gmail.com>'
   - 'Tokuhiro Matsuno <tokuhirom@gmail.com>'
