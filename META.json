@@ -53,17 +53,19 @@
       },
       "test" : {
          "requires" : {
-            "DateTime" : "0",
             "Test::More" : "0.98",
             "Test::Requires" : "0",
             "Tie::IxHash" : "0"
+         },
+         "suggests" : {
+            "DateTime" : "0"
          }
       }
    },
    "provides" : {
       "SQL::Maker" : {
          "file" : "lib/SQL/Maker.pm",
-         "version" : "1.19"
+         "version" : "1.20"
       },
       "SQL::Maker::Condition" : {
          "file" : "lib/SQL/Maker/Condition.pm"
@@ -101,7 +103,7 @@
          "web" : "https://github.com/tokuhirom/SQL-Maker"
       }
    },
-   "version" : "1.19",
+   "version" : "1.20",
    "x_authority" : "cpan:TOKUHIROM",
    "x_contributors" : [
       "lestrrat <lestrrat+github@gmail.com>",
