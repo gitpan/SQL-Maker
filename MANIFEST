@@ -29,6 +29,7 @@ t/10_subquery.t
 t/11_set.t
 t/12_insert_empty.t
 t/13_strict.t
+t/14_quote_char.t
 t/condition/01_where.t
 t/condition/02_make_term.t
 t/condition/03_add_raw.t
